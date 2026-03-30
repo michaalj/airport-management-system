@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Pracownika - System Lotniskowy</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; color: #333; }
+        .header { background-color: #5667c6; color: white; padding: 20px 0; text-align: center; }
+        .header h1 { margin: 0; font-size: 2.5em; }
+        .container { width: 80%; margin: 20px auto; padding: 20px; background-color: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 8px; }
+        .dashboard-title { font-size: 1.8em; text-align: center; margin-bottom: 30px; color: #5667c6; }
+        .flights-header { font-size: 1.8em; margin-top: 30px; margin-bottom: 15px; border-bottom: 2px solid #5667c6; padding-bottom: 5px;}
+        .flight-list { list-style: none; padding: 0; }
+        .flight-item { background-color: #f0f2f5; margin-bottom: 15px; padding: 10px; border-radius: 5px; border: 1px solid #ddd; }
+        .flight-item summary { font-size: 1.2em; cursor: pointer; padding: 5px; outline: none; list-style-position: inside; }
+        .flight-item summary:hover { background-color: #e0e4e8; }
+        .flight-item summary strong { color: #333; }
+        .reservations-container { padding-left: 20px; margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px;}
+        .reservations-header { font-size: 1.1em; margin-top:5px; margin-bottom:8px; font-weight:bold; color: #444;}
+        .reservation-sublist { list-style: none; padding-left: 0; }
+        .reservation-item { background-color: #fff; border: 1px solid #e0e0e0; padding: 10px; margin-bottom: 8px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .reservation-info { font-size: 1em; }
+        .action-button-small { text-decoration: none; background-color: #17a2b8; color: white; padding: 6px 12px; border-radius: 4px; font-size: 0.9em; border: none; cursor: pointer;}
+        .action-button-small:hover { background-color: #138496; }
+        .no-data { font-style: italic; color: #777; padding-left: 20px; margin-top: 10px;}
+        .actions-container { margin-top: 40px; text-align: center; padding-bottom: 20px; }
+        .action-button { padding:12px 25px; background:#007bff; color:white; border:none; border-radius:8px; font-size:1.1em; cursor:pointer; text-decoration: none; margin-left: 10px; }
+        .action-button:hover {background:#0056b3;}
+        .logout-button { background-color: #dc3545; }
+        .logout-button:hover { background-color: #c82333; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>System Lotniskowy</h1>
+</div>
+
+<div class="container">
+    <h2 class="dashboard-title" th:text="${dashboardTitle}">Panel Pracownika</h2>
+
+    <h3 class="flights-header">Dostępne Loty</h3>
+    <ul class="flight-list" th:if="${flights != null && !flights.isEmpty()}">
+        <li th:each="flight : ${flights}" class="flight-item">
+            <details>
+                <summary class="flight-details">
+                    <strong th:text="${flight.number}">LO123</strong>:
+                    <span th:text="${flight.departureAirport}">WAW</span> → <span th:text="${flight.arrivalAirport}">LHR</span>
+                    - Wylot: <span th:text="${#temporals.format(flight.departureTime, 'dd-MM-yyyy HH:mm')}"></span>
+                </summary>
+                <div th:if="${flight.reservations != null && !flight.reservations.isEmpty()}" class="reservations-container">
+                    <h4 class="reservations-header">Rezerwacje na ten lot (do odprawy):</h4>
+                    <th:block th:with="reservationsToDisplay=${flight.reservations.?[@checkInService.getCheckInStatus(#this.reservationNumber)?.name() != 'COMPLETED']}">
+                        <ul class="reservation-sublist" th:if="${!#lists.isEmpty(reservationsToDisplay)}">
+                            <li th:each="reservation : ${reservationsToDisplay}" class="reservation-item">
+                                <span class="reservation-info" th:text="'Numer rezerwacji: ' + ${reservation.reservationNumber}"></span>
+                                <form th:action="@{/employee/checkin/initiate}" method="post" style="display: inline;">
+                                    <input type="hidden" name="reservationNumber" th:value="${reservation.reservationNumber}" />
+                                    <button type="submit" class="action-button-small">Odpraw</button>
+                                </form>
+                            </li>
+                        </ul>
+                        <p class="no-data" th:if="${!#lists.isEmpty(flight.reservations) && #lists.isEmpty(reservationsToDisplay)}">
+                            Wszystkie rezerwacje na ten lot zostały już odprawione.
+                        </p>
+                    </th:block>
+                </div>
+                <p class="no-data" th:if="${flight.reservations == null || flight.reservations.isEmpty()}">
+                    Brak rezerwacji przypisanych do tego lotu.
+                </p>
+            </details>
+        </li>
+    </ul>
+    <p class="no-data" th:if="${flights == null || flights.isEmpty()}">
+        Obecnie brak dostępnych lotów do wyświetlenia.
+    </p>
+    <div class="actions-container">
+        <a th:href="@{/auth/logout}" class="action-button logout-button">Wyloguj</a>
+    </div>
+</div>
+
+</body>
+</html>

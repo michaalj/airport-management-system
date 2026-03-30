@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Wybierz miejsce</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #fff;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            width: 100%;
+            background: #5667c6;
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-title {color:white; font-size:2em; text-align:center; margin:0; flex-grow: 1;}
+        .header-info {color:white; font-size:0.9em; width: 200px; text-align: left; padding-left: 20px;}
+        .header-placeholder {width: 200px; padding-right: 20px;}
+        .content-container {
+            margin-top: 30px;
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+            padding-bottom: 30px;
+        }
+        .form-label {
+            display: block;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #5667c6;
+            font-weight: bold;
+        }
+        .select-seat {
+            font-size: 1.2em;
+            padding: 12px 30px;
+            border-radius: 7px;
+            border: 1px solid #ccc;
+            margin-bottom: 30px;
+            min-width: 250px;
+        }
+        .error-message {
+            color: red;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+        }
+        .action-button {
+            padding: 18px 55px;
+            background: #5667c6;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-size: 1.1em;
+            cursor: pointer;
+        }
+        .action-button:hover {background: #4a5aaf;}
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <span class="header-info" th:text="'Nr Rezerwacji: ' + ${reservationNumber}"></span>
+    <h1 class="header-title">WYBIERZ MIEJSCE</h1>
+    <span class="header-placeholder">&nbsp;</span>
+</div>
+
+<div class="content-container">
+    <form th:action="@{/checkin/generate}" method="post">
+        <input type="hidden" name="reservationNumber" th:value="${reservationNumber}" />
+        <input type="hidden" name="flightId" th:value="${flightId}" />
+
+        <div>
+            <label for="seat" class="form-label">WYBIERZ DOSTĘPNE MIEJSCE</label>
+            <select id="seat" name="selectedSeat" class="select-seat">
+                <option value="">-- wybierz --</option>
+                <option th:each="seat : ${availableSeats}" th:value="${seat}" th:text="${seat}">1A</option>
+            </select>
+        </div>
+
+        <div th:if="${error != null}" class="error-message">
+            <span th:text="${error}"></span>
+        </div>
+
+        <div class="button-container">
+            <button type="submit" name="autoAssign" value="true" class="action-button">
+                PRZYPISZ AUTOMATYCZNIE
+            </button>
+            <button type="submit" class="action-button">
+                POTWIERDZ
+            </button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

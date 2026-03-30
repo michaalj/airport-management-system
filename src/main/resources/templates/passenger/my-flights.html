@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Moje Loty</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; color: #333; }
+    .header { background-color: #28a745; color: white; padding: 20px 0; text-align: center; }
+    .header h1 { margin: 0; font-size: 2.5em; }
+    .container { width: 80%; margin: 20px auto; padding: 20px; background-color: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 8px; }
+    .page-title { font-size: 1.8em; text-align: center; margin-bottom: 30px; color: #28a745; }
+    .reservation-list { list-style: none; padding: 0; }
+    .reservation-card { background-color: #f9f9f9; margin-bottom: 15px; padding: 15px; border-radius: 5px; border: 1px solid #ddd; }
+    .reservation-card h3 { margin-top: 0; color: #007bff; font-size: 1.3em; margin-bottom: 10px;}
+    .flight-details-list { list-style: none; padding-left: 0px; }
+    .flight-info-item { margin-bottom: 8px; font-size: 1em; }
+    .reservation-actions { margin-top: 12px; }
+    .checkin-action-button { text-decoration: none; background-color: #007bff; color: white; padding: 8px 15px; border-radius: 5px; font-size: 1em; border: none; cursor: pointer; display: inline-block; margin-top: 5px; }
+    .checkin-action-button:hover { background-color: #0056b3; }
+    .status-completed { color: green; font-weight: bold; font-size: 1em; display: inline-block; margin-top: 10px;}
+    .no-data { font-style: italic; color: #777; margin-top: 10px;}
+    .bottom-actions-container { margin-top: 40px; text-align: center; }
+    .nav-button { padding:12px 25px; color:white; border:none; border-radius:8px; font-size:1.1em; cursor:pointer; text-decoration: none; margin: 0 10px; }
+    .logout-button {background-color: #dc3545;}
+    .logout-button:hover {background-color: #c82333;}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Moje Zarezerwowane Loty</h1>
+</div>
+
+<div class="container">
+  <h2 class="page-title" th:if="${passenger != null && passenger.person != null}"
+      th:text="'Witaj, ' + ${passenger.person.firstName} + ' ' + ${passenger.person.lastName} + '!'">
+  </h2>
+
+  <div th:if="${reservations != null && !reservations.isEmpty()}">
+    <h3>Twoje aktywne rezerwacje:</h3>
+    <ul class="reservation-list">
+      <li th:each="res : ${reservations}" class="reservation-card">
+        <h3>Rezerwacja: <span th:text="${res.reservationNumber}"></span></h3>
+        <div th:if="${res.flights != null && !res.flights.isEmpty()}">
+          <h4>Loty w tej rezerwacji:</h4>
+          <ul class="flight-details-list">
+            <li th:each="flight : ${res.flights}" class="flight-info-item">
+              <span th:text="${flight.number}">LO123</span>:
+              <span th:text="${flight.departureAirport}">WAW</span> → <span th:text="${flight.arrivalAirport}">LHR</span>
+              (Wylot: <span th:text="${#temporals.format(flight.departureTime, 'dd-MM-yyyy HH:mm')}"></span>)
+            </li>
+          </ul>
+        </div>
+        <p class="no-data" th:if="${res.flights == null || #lists.isEmpty(res.flights)}">Brak lotów przypisanych do tej rezerwacji.</p>
+
+        <div class="reservation-actions">
+          <th:block th:if="${checkInService != null}" >
+            <th:block th:with="currentStatus=${checkInService.getCheckInStatus(res.reservationNumber)}">
+              <span th:if="${currentStatus == T(org.example.project.model.CheckInStatus).COMPLETED}" class="status-completed">Odprawa zakończona</span>
+              <form th:if="${currentStatus != T(org.example.project.model.CheckInStatus).COMPLETED}"
+                    th:action="@{/checkin/initiate}" method="post" style="display: inline;">
+                <input type="hidden" name="reservationNumber" th:value="${res.reservationNumber}" />
+                <button type="submit" class="checkin-action-button">Wykonaj Odprawę</button>
+              </form>
+            </th:block>
+          </th:block>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <p class="no-data" th:if="${reservations == null || #lists.isEmpty(reservations)}">
+    Nie masz obecnie żadnych zarezerwowanych lotów.
+  </p>
+
+  <div class="bottom-actions-container">
+    <a th:href="@{/auth/logout}" class="nav-button logout-button">Wyloguj</a>
+  </div>
+</div>
+
+</body>
+</html>

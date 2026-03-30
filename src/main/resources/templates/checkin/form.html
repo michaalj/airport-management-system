@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Odprawa – Wprowadź dane rezerwacji</title>
+  <style>
+    body {display:flex; flex-direction:column; align-items:center; min-height:100vh; background:#fff; margin:0; font-family: Arial, sans-serif;}
+    .header {width:100%; background:#5667c6; padding:20px 0; display:flex; justify-content:space-between; align-items:center;}
+    .header-title {color:white; font-size:2em; text-align:center; margin:0; flex-grow: 1;}
+    .header-info {color:white; font-size:0.9em; width: 200px; text-align: left; padding-left: 20px;}
+    .header-placeholder {width: 200px; padding-right: 20px;}
+    .content-form {margin-top:60px; display:flex; flex-direction:column; align-items:center; width: 100%; max-width: 600px;}
+    .form-label-container {display: flex; align-items: center; width: 100%; margin-bottom: 30px;}
+    .form-label {font-size:1.4em; margin-right: 10px; white-space: nowrap;}
+    .form-input {font-size:1.3em; padding:12px; flex-grow: 1; box-sizing: border-box; border:1px solid #ccc; border-radius:4px;}
+    .error-message {color:red; font-size:1.1em; margin-bottom:30px; text-align:center;}
+    .button-container {display:flex; justify-content:center; gap:40px; margin-top:30px; width:100%;}
+    .action-button {padding:20px 50px; color:white; border:none; border-radius:8px; font-size:1.2em; cursor:pointer; text-decoration:none; min-width: 180px; text-align: center;}
+    .confirm-button {background:#5667c6;}
+    .confirm-button:hover {background:#4a5aaf;}
+    .cancel-button {background-color: #6c757d;}
+    .cancel-button:hover {background-color: #5a6268;}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-info" th:if="${reservationNumber != null && reservationNumber != ''}" th:text="'Nr Rezerwacji: ' + ${reservationNumber}"></span>
+  <span class="header-info" th:unless="${reservationNumber != null && reservationNumber != ''}">&nbsp;</span>
+  <h1 class="header-title">WPROWADŹ DANE REZERWACJI</h1>
+  <span class="header-placeholder">&nbsp;</span>
+</div>
+
+<form th:action="@{/checkin/validate}" method="post" class="content-form">
+  <div class="form-label-container">
+    <label for="reservationNumber" class="form-label">NUMER REZERWACJI:</label>
+    <input type="text" id="reservationNumber" name="reservationNumber" required
+           th:value="${reservationNumber}" class="form-input" autocomplete="off" />
+  </div>
+
+  <div th:if="${error}" class="error-message">
+    <span th:text="${error}"></span>
+  </div>
+
+  <div class="button-container">
+    <button type="submit" class="action-button confirm-button">POTWIERDZ</button>
+    <button type="button" onclick="confirmAndSubmitActualCancel()" class="action-button cancel-button">ANULUJ</button>
+  </div>
+</form>
+
+<form id="actualCancelForm" th:action="@{/checkin/cancel}" method="post" style="display:none;">
+  <input type="hidden" name="reservationNumber" id="cancelReservationNumberHidden" th:value="${reservationNumber != null ? reservationNumber : ''}" />
+</form>
+
+<script>
+  function confirmAndSubmitActualCancel() {
+    console.log("Funkcja confirmAndSubmitActualCancel() została wywołana.");
+
+    var visibleInput = document.getElementById('reservationNumber');
+    var hiddenInputForCancel = document.getElementById('cancelReservationNumberHidden');
+    var cancelForm = document.getElementById('actualCancelForm');
+
+    if (!visibleInput || !hiddenInputForCancel || !cancelForm) {
+      console.error("Błąd: Jeden z elementów formularza anulowania nie został znaleziony. Sprawdź ID w HTML.");
+      return;
+    }
+
+    var currentReservationNumber = visibleInput.value;
+    console.log("Pobrana wartość z pola: [" + currentReservationNumber + "]");
+
+    hiddenInputForCancel.value = currentReservationNumber;
+    console.log("Ustawiono wartość w ukrytym polu na: [" + hiddenInputForCancel.value + "]");
+
+    if (confirm("CZY NAPEWNO CHCESZ OPUŚCIĆ ODPRAWĘ?")) {
+      console.log("Użytkownik potwierdził. Wysyłanie formularza anulowania.");
+      cancelForm.submit();
+    } else {
+      console.log("Użytkownik anulował okno dialogowe.");
+    }
+  }
+</script>
+
+</body>
+</html>

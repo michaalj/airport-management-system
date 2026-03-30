@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Karta Pokładowa</title>
+    <style>
+        body {display:flex; flex-direction:column; align-items:center; min-height:100vh; background:#fff; margin:0; font-family: Arial, sans-serif;}
+        .header {width:100%; background:#5667c6; padding:20px 0; display:flex; justify-content:space-between; align-items:center;}
+        .header-title {color:white; font-size:2em; text-align:center; margin:0; flex-grow: 1;}
+        .header-info {color:white; font-size:0.9em; width: 200px; text-align: left; padding-left: 20px;}
+        .header-placeholder {width: 200px; padding-right: 20px;}
+        .content-container {margin-top:50px; font-size:1.2em; color:#333; text-align:left; background:#f9f9f9; padding: 30px 50px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);}
+        .content-container p {margin: 10px 0; line-height: 1.6;}
+        .content-container strong {color: #5667c6;} /* Podkreślenie etykiet */
+        .button-container {margin-top:40px;}
+        .action-button {padding:15px 40px; background:#5667c6; color:white; border:none; border-radius:8px; font-size:1.1em; cursor:pointer;}
+        .action-button:hover {background:#4a5aaf;}
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <span class="header-info" th:if="${reservationNumber != null}" th:text="'Nr Rezerwacji: ' + ${reservationNumber}"></span>
+    <span class="header-info" th:unless="${reservationNumber != null}">&nbsp;</span>
+    <h1 class="header-title">KARTA POKŁADOWA</h1>
+    <span class="header-placeholder">&nbsp;</span>
+</div>
+
+<div th:if="${boardingPass != null}" class="content-container">
+    <h2 style="text-align:center; color:#5667c6; margin-top:0; margin-bottom:25px;">TWOJA KARTA POKŁADOWA</h2>
+    <p><strong>NUMER KARTY POKŁADOWEJ:</strong> <span th:text="${boardingPass.boardingPassNumber}">XYZ123</span></p>
+    <p><strong>KLASA PODRÓŻY:</strong> <span th:text="${boardingPass.travelClass}">EKONOMICZNA</span></p>
+    <p><strong>MIEJSCE:</strong> <span th:text="${boardingPass.seat}">1A</span></p>
+    <p th:if="${boardingPass.assignedFlight != null}">
+        <strong>DANE LOTU:</strong>
+        <span th:text="${boardingPass.assignedFlight.departureAirport}">WARSZAWA</span> →
+        <span th:text="${boardingPass.assignedFlight.arrivalAirport}">MADRYT</span>
+        <br/>
+        <span style="font-size: 0.9em;" th:if="${boardingPass.assignedFlight.departureTime != null}"
+              th:text="'Wylot: ' + ${#temporals.format(boardingPass.assignedFlight.departureTime, 'dd-MM-yyyy HH:mm')}"></span>
+    </p>
+    <p th:if="${boardingPass.checkIn != null && boardingPass.checkIn.passenger != null && boardingPass.checkIn.passenger.person != null}">
+        <strong>PASAŻER:</strong>
+        <span th:text="${boardingPass.checkIn.passenger.person.firstName} + ' ' + ${boardingPass.checkIn.passenger.person.lastName}">Jan Kowalski</span>
+    </p>
+</div>
+<div th:if="${boardingPass == null}" class="error-message" style="margin-top:50px;">
+    Nie udało się wygenerować karty pokładowej.
+</div>
+
+<div class="button-container">
+    <form th:action="@{/checkin/finish}" method="post" style="margin-top:40px;">
+        <button type="submit" class="action-button">ZAKOŃCZ</button>
+    </form>
+</div>
+
+</body>
+</html>

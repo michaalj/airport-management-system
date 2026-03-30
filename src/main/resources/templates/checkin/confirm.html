@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Dane Twojej rezerwacji</title>
+  <style>
+    body {display:flex; flex-direction:column; align-items:center; min-height:100vh; background:#fff; margin:0; font-family: Arial, sans-serif;}
+    .header {width:100%; background:#5667c6; padding:20px 0; display:flex; justify-content:space-between; align-items:center;}
+    .header-title {color:white; font-size:2em; text-align:center; margin:0; flex-grow: 1;}
+    .header-info {color:white; font-size:0.9em; width: 200px; text-align: left; padding-left: 20px;}
+    .header-placeholder {width: 200px; padding-right: 20px;}
+    .details-container {margin-top:60px; font-size:1.4em; line-height:2; background:#f9f9f9; border-radius:12px; padding:40px 60px; box-shadow:0 2px 10px rgba(0,0,0,0.1); text-align:left;}
+    .details-container div {margin-bottom: 10px;}
+    .button-container {margin-top:40px; display:flex; gap:40px;}
+    .action-button {padding:20px 70px; background:#5667c6; color:white; border:none; border-radius:8px; font-size:1.2em; cursor:pointer;}
+    .action-button:hover {background:#4a5aaf;}
+  </style>
+  <script>
+    function confirmCancel(event) {
+      if (confirm("CZY NAPEWNO CHCESZ OPUŚCIĆ ODPRAWĘ?")) {
+        return true;
+      } else {
+        event.preventDefault();
+        return false;
+      }
+    }
+  </script>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-info" th:text="'Nr Rezerwacji: ' + ${reservation.reservationNumber}"></span>
+  <h1 class="header-title">DANE TWOJEJ REZERWACJI</h1>
+  <span class="header-placeholder">&nbsp;</span>
+</div>
+
+<div class="details-container" th:if="${reservation != null}">
+  <div>
+    NUMER REZERWACJI: <strong th:text="${reservation.reservationNumber}">ABC123</strong>
+  </div>
+  <div th:if="${reservation.passengers != null && !reservation.passengers.isEmpty()}">
+    IMIĘ I NAZWISKO: <strong th:text="${reservation.passengers[0].person.firstName} + ' ' + ${reservation.passengers[0].person.lastName}">JAN KOWALSKI</strong>
+  </div>
+  <div th:if="${reservation.flights != null && !reservation.flights.isEmpty() && reservation.flights[0].departureTime != null}">
+    DATA WYLOTU: <strong th:text="${#temporals.format(reservation.flights[0].departureTime, 'dd-MM-yyyy')}">27-06-2025</strong>
+  </div>
+  <div th:if="${reservation.flights != null && !reservation.flights.isEmpty()}">
+    DANE LOTU: <strong th:text="${reservation.flights[0].departureAirport} + ' → ' + ${reservation.flights[0].arrivalAirport}">WARSZAWA → MADRYT</strong>
+  </div>
+  <div>
+    KLASA: <strong th:text="'EKONOMICZNA'">EKONOMICZNA</strong> </div>
+</div>
+<div th:if="${reservation == null}" class="error-message">
+  Nie można załadować danych rezerwacji.
+</div>
+
+<div class="button-container" th:if="${reservation != null}">
+  <form th:action="@{/checkin/seat-selection}" method="post" style="display:inline;">
+    <input type="hidden" name="reservationNumber" th:value="${reservation.reservationNumber}" />
+    <button type="submit" class="action-button">POTWIERDZ</button>
+  </form>
+  <form th:action="@{/checkin/cancel}" method="post" style="display:inline;">
+    <input type="hidden" name="reservationNumber" th:value="${reservation.reservationNumber}" />
+    <button type="submit" onclick="return confirmCancel(event);" class="action-button">ANULUJ</button>
+  </form>
+</div>
+
+</body>
+</html>

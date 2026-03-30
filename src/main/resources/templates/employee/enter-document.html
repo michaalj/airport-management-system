@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Odprawa Pracownicza - Podaj Dokument</title>
+  <style>
+    body {display:flex; flex-direction:column; align-items:center; min-height:100vh; background:#f4f4f4; margin:0; font-family: Arial, sans-serif;}
+    .header {width:100%; background:#17a2b8; padding:20px 0; display:flex; justify-content:space-between; align-items:center;}
+    .header-title {color:white; font-size:2em; text-align:center; margin:0; flex-grow: 1;}
+    .header-info {color:white; font-size:0.9em; width: 250px; text-align: left; padding-left: 20px;}
+    .header-placeholder {width: 250px; padding-right: 20px;}
+    .content-form {margin-top:60px; display:flex; flex-direction:column; align-items:center; width: 100%; max-width: 600px; padding: 30px; background-color: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);}
+    .info-text {font-size: 1.2em; margin-bottom: 20px; color: #333; text-align: center;}
+    .form-label-container {display: flex; align-items: center; width: 100%; margin-bottom: 20px;}
+    .form-label {font-size:1.2em; margin-right: 10px; white-space: nowrap; min-width: 220px;}
+    .form-input {font-size:1.1em; padding:10px; flex-grow: 1; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;}
+    .error-message {color:red; font-size:1em; margin-bottom:20px; text-align:center;}
+    .button-container {display:flex; justify-content:center; gap:20px; margin-top:20px; width:100%;}
+    .action-button {padding:15px 40px; color:white; border:none; border-radius:8px; font-size:1.1em; cursor:pointer; text-decoration:none; min-width: 180px; text-align: center;}
+    .confirm-button {background:#17a2b8;}
+    .confirm-button:hover {background:#138496;}
+    .cancel-button {background-color: #6c757d;}
+    .cancel-button:hover {background-color: #5a6268;}
+  </style>
+  <script>
+    function confirmCancelAndGoBack(event, targetUrl) {
+      if (confirm("CZY NAPEWNO CHCESZ ANULOWAĆ I WRÓCIĆ DO PANELU GŁÓWNEGO?")) {
+        window.location.href = targetUrl;
+      }
+      return false;
+    }
+  </script>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-info" th:text="'Rezerwacja: ' + ${reservationNumber}"></span>
+  <h1 class="header-title">Identyfikacja Pasażera</h1>
+  <span class="header-placeholder">&nbsp;</span>
+</div>
+
+<form th:action="@{/employee/checkin/process-document}" method="post" class="content-form">
+  <input type="hidden" name="reservationNumber" th:value="${reservationNumber}" />
+
+  <p class="info-text">
+    Wybrano rezerwację: <strong th:text="${reservationNumber}">RES-XXX</strong>.
+    Proszę podać numer dokumentu tożsamości pasażera.
+  </p>
+
+  <div class="form-label-container">
+    <label for="identityDocument" class="form-label">Numer Dokumentu Pasażera:</label>
+    <input type="text" id="identityDocument" name="identityDocument" required class="form-input" th:value="${identityDocument}" autocomplete="off">
+  </div>
+
+  <div th:if="${error}" class="error-message">
+    <span th:text="${error}"></span>
+  </div>
+
+  <div class="button-container">
+    <button type="submit" class="action-button confirm-button">Kontynuuj Odprawę</button>
+    <a href="#" th:onclick="'return confirmCancelAndGoBack(event, \'' + @{/employee/dashboard} + '\');'"
+       class="action-button cancel-button">Anuluj</a>
+  </div>
+</form>
+
+</body>
+</html>
