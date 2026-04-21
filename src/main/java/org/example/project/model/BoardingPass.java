@@ -36,52 +36,5 @@ public class BoardingPass {
     @JoinColumn(name = "checkin_id")
     private CheckIn checkIn;
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getBoardingPassNumber() {
-        return boardingPassNumber;
-    }
-
-    public String getTravelClass() {
-        return travelClass;
-    }
-
-    public Flight getAssignedFlight() {
-        return assignedFlight;
-    }
-
-    public String getSeat() {
-        return seat;
-    }
-
-    public CheckIn getCheckIn() {
-        return checkIn;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setBoardingPassNumber(String boardingPassNumber) {
-        this.boardingPassNumber = boardingPassNumber;
-    }
-
-    public void setTravelClass(String travelClass) {
-        this.travelClass = travelClass;
-    }
-
-    public void setAssignedFlight(Flight assignedFlight) {
-        this.assignedFlight = assignedFlight;
-    }
-
-    public void setSeat(String seat) {
-        this.seat = seat;
-    }
-
-    public void setCheckIn(CheckIn checkIn) {
-        this.checkIn = checkIn;
-    }
 }
 

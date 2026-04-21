@@ -49,15 +49,4 @@ public class Passenger {
         System.out.println();
     }
 
-    public int getIdentityDocument() {
-        return identityDocument;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Person getPerson() {
-        return person;
-    }
 }

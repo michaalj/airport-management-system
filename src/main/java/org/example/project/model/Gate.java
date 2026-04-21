@@ -30,10 +30,8 @@ public class Gate {
     @ManyToMany(mappedBy = "gates")
     private Set<Flight> flights = new HashSet<>();
 
-    @Getter
     @ManyToMany(mappedBy = "gates")
     private Set<Terminal> terminals = new HashSet<>();
-
 
     public boolean isAvailable() {
         return status == GateStatus.AVAILABLE;
@@ -41,10 +39,6 @@ public class Gate {
 
     public void release() {
         this.status = GateStatus.AVAILABLE;
-    }
-
-    public Set<Terminal> getTerminals() {
-        return terminals;
     }
 }
 

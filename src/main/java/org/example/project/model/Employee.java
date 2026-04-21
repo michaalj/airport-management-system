@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -15,6 +17,7 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 @Getter
 @Setter
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -38,6 +41,7 @@ public class Employee {
     @JoinColumn(name = "person_id", nullable = false, unique = true)
     private Person person;
 
+    @Builder.Default
     @ManyToMany(mappedBy = "employees")
     private Set<CheckIn> checkIns = new HashSet<>();
 
@@ -49,18 +53,6 @@ public class Employee {
         }
         System.out.println("Employee - PESEL: " + pesel + ", Salary: " + salary +
                 ", Start Date: " + startDate + (endDate != null ? ", End Date: " + endDate : ""));
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
 }

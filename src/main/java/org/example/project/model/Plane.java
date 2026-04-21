@@ -14,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@EqualsAndHashCode
 public class Plane {
 
     @Id
@@ -29,24 +30,21 @@ public class Plane {
     @NotNull
     private int capacity;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "planes")
     private Set<Flight> flights = new HashSet<>();
 
     @OneToMany(mappedBy = "plane", cascade = CascadeType.REMOVE)
     private Set<Engine> engines = new HashSet<>();
+
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-
     @OneToMany(mappedBy = "plane", cascade = CascadeType.ALL)
     private Set<MaintenanceHistory> maintenanceHistories = new HashSet<>();
 
-
     public boolean isReadyToFly() {
         return !engines.isEmpty();
-    }
-
-    public String getRegistrationNumber() {
-        return registrationNumber;
     }
 
 }

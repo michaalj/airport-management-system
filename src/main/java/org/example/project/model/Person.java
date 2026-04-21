@@ -44,11 +44,4 @@ public class Person {
         System.out.println("Person: " + firstName + " " + lastName + ", birth: " + birthDate + " (age: " + getAge() + ")");
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
 }

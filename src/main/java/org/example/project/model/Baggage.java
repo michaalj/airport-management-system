@@ -26,11 +26,4 @@ public class Baggage {
     @JoinColumn(name = "reservation_id", nullable = false, updatable = false)
     private Reservation reservation;
 
-    void setReservation(Reservation reservation) {
-        this.reservation = reservation;
-    }
-
-    public Reservation getReservation() {
-        return reservation;
-    }
 }
